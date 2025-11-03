@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { ArrowLeft, FileText } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
 
 export default function TermsPage() {
   return (
