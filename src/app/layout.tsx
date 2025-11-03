@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
+// Force dynamic rendering to prevent static generation timeouts
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: {

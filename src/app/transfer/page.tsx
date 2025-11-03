@@ -1,3 +1,5 @@
+'use client'
+
 import { Header } from '@/components/shared/Header'
 import { TransferWizard } from '@/components/features/transfer/TransferWizard'
 

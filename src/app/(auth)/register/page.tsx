@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { RegisterForm } from '@/components/features/auth/RegisterForm'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
