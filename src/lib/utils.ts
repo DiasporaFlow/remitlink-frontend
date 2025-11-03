@@ -121,3 +121,52 @@ export function formatPhoneNumber(phone: string): string {
   }
   return phone
 }
+
+/**
+ * Calculate transaction fee (1.5% of amount)
+ * @param amount - Transaction amount
+ * @returns Fee amount
+ */
+export function calculateFee(amount: number): number {
+  return amount * 0.015 // 1.5% fee
+}
+
+/**
+ * Get user initials from name
+ * @param firstName - User's first name
+ * @param lastName - User's last name
+ * @returns Initials (e.g., "JD")
+ */
+export function getInitials(firstName: string, lastName?: string): string {
+  const first = firstName.charAt(0).toUpperCase()
+  const last = lastName ? lastName.charAt(0).toUpperCase() : ''
+  return `${first}${last}`
+}
+
+/**
+ * Truncate blockchain address
+ * @param address - Blockchain address
+ * @param chars - Number of chars to show on each side
+ * @returns Truncated address (e.g., "0x1234...5678")
+ */
+export function truncateAddress(address: string, chars: number = 4): string {
+  if (address.length <= chars * 2 + 3) return address
+  return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`
+}
+
+/**
+ * Get transaction status color
+ * @param status - Transaction status
+ * @returns Tailwind color class
+ */
+export function getStatusColor(status: string): string {
+  const colors: Record<string, string> = {
+    pending: 'text-yellow-600 bg-yellow-50',
+    processing: 'text-blue-600 bg-blue-50',
+    completed: 'text-green-600 bg-green-50',
+    failed: 'text-red-600 bg-red-50',
+    cancelled: 'text-gray-600 bg-gray-50',
+    refunded: 'text-purple-600 bg-purple-50',
+  }
+  return colors[status] || 'text-gray-600 bg-gray-50'
+}

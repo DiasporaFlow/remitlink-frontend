@@ -1,6 +1,10 @@
 /**
- * TypeScript Type Definitions for RemitLink
+ * Core TypeScript Type Definitions for RemitLink MVP
  */
+
+// Re-export API and Blockchain types
+export * from './api'
+export * from './blockchain'
 
 // User Types
 export interface User {
@@ -9,7 +13,7 @@ export interface User {
   firstName: string
   lastName: string
   phoneNumber?: string
-  dateOfBirth?: string
+  countryCode: string
   kycStatus: KYCStatus
   isActive: boolean
   createdAt: string
@@ -33,10 +37,12 @@ export interface LoginCredentials {
 export interface RegisterData {
   email: string
   password: string
+  confirmPassword: string
   firstName: string
   lastName: string
   phoneNumber?: string
-  dateOfBirth?: string
+  countryCode: string
+  agreeToTerms: boolean
 }
 
 // Transaction Types
@@ -45,16 +51,19 @@ export interface Transaction {
   senderId: string
   recipientId: string
   amount: number
-  currency: string
-  exchangeRate?: number
-  fee: number
+  fromCurrency: string
+  toCurrency: string
+  exchangeRate: number
+  feeAmount: number
   totalAmount: number
   status: TransactionStatus
-  paymentMethod: string
-  description?: string
+  transferMethod: TransferMethod
+  riskScore?: number
   blockchainTxHash?: string
+  description?: string
   createdAt: string
   updatedAt: string
+  completedAt?: string
   sender?: User
   recipient?: Recipient
 }
@@ -67,13 +76,7 @@ export type TransactionStatus =
   | 'cancelled'
   | 'refunded'
 
-export interface CreateTransactionData {
-  recipientId: string
-  amount: number
-  currency: string
-  paymentMethod: string
-  description?: string
-}
+export type TransferMethod = 'BLOCKCHAIN' | 'BANK' | 'HYBRID'
 
 // Recipient Types
 export interface Recipient {
@@ -85,8 +88,9 @@ export interface Recipient {
   phoneNumber: string
   bankName?: string
   accountNumber?: string
-  country: string
+  countryCode: string
   currency: string
+  isVerified: boolean
   createdAt: string
   updatedAt: string
 }
@@ -98,7 +102,7 @@ export interface CreateRecipientData {
   phoneNumber: string
   bankName?: string
   accountNumber?: string
-  country: string
+  countryCode: string
   currency: string
 }
 
@@ -116,38 +120,45 @@ export interface ExchangeRate {
   to: string
   rate: number
   timestamp: string
+  expiresAt: string
 }
 
-// KYC Types
-export interface KYCDocument {
-  id: string
-  userId: string
-  documentType: DocumentType
-  documentNumber: string
-  documentUrl: string
-  status: KYCStatus
-  submittedAt: string
-  reviewedAt?: string
-  notes?: string
+// Dashboard Stats Types
+export interface DashboardStats {
+  totalBalance: number
+  pendingTransactions: number
+  completedTransactions: number
+  totalSent: number
+  recentTransactions: Transaction[]
 }
 
-export type DocumentType = 'passport' | 'id_card' | 'drivers_license' | 'proof_of_address'
-
-export interface SubmitKYCData {
-  documentType: DocumentType
-  documentNumber: string
-  documentFile: File
+// Transfer Step Data
+export interface TransferStepOne {
+  amount: number
+  fromCurrency: string
+  toCurrency: string
+  recipientId: string
 }
 
-// Wallet Types
-export interface Wallet {
-  id: string
-  userId: string
-  balance: number
-  currency: string
-  isDefault: boolean
-  createdAt: string
-  updatedAt: string
+export interface TransferStepTwo {
+  exchangeRate: ExchangeRate
+  feeAmount: number
+  totalAmount: number
+  agreeToTerms: boolean
+}
+
+// Country Types
+export interface Country {
+  code: string
+  name: string
+  flag: string
+  currencies: string[]
+}
+
+// Form Field Error
+export interface FormError {
+  field: string
+  message: string
 }
 
 // Notification Types
@@ -163,60 +174,6 @@ export interface Notification {
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error'
 
-// API Response Types
-export interface ApiResponse<T = unknown> {
-  success: boolean
-  data?: T
-  message?: string
-  error?: string
-}
-
-export interface PaginatedResponse<T> {
-  data: T[]
-  pagination: {
-    page: number
-    pageSize: number
-    totalPages: number
-    totalItems: number
-  }
-}
-
-// Form Types
-export interface FormError {
-  field: string
-  message: string
-}
-
-// Filter and Sort Types
-export interface TransactionFilters {
-  status?: TransactionStatus
-  startDate?: string
-  endDate?: string
-  minAmount?: number
-  maxAmount?: number
-  currency?: string
-}
-
-export interface SortOptions {
-  field: string
-  order: 'asc' | 'desc'
-}
-
-// Dashboard Stats Types
-export interface DashboardStats {
-  totalSent: number
-  totalTransactions: number
-  totalSaved: number
-  recentTransactions: Transaction[]
-  monthlyStats: MonthlyStats[]
-}
-
-export interface MonthlyStats {
-  month: string
-  totalAmount: number
-  transactionCount: number
-}
-
 // Settings Types
 export interface UserSettings {
   userId: string
@@ -230,9 +187,16 @@ export interface UserSettings {
   twoFactorEnabled: boolean
 }
 
-// Error Types
-export interface ApiError {
-  code: string
-  message: string
-  details?: unknown
+// Filters and Sorting
+export interface TransactionFilters {
+  status?: TransactionStatus
+  startDate?: string
+  endDate?: string
+  minAmount?: number
+  maxAmount?: number
+}
+
+export interface SortOptions {
+  field: string
+  order: 'asc' | 'desc'
 }

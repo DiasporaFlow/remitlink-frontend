@@ -1,119 +1,75 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { User, LoginCredentials, AuthResponse } from '@/types'
-import api from '@/lib/api'
-import { STORAGE_KEYS, API_ENDPOINTS } from '@/lib/constants'
+import { useState } from 'react'
+import { useAuthStore } from '@/store/authStore'
+import { authService } from '@/services/authService'
+import type { LoginCredentials, RegisterData } from '@/types'
+import { toast } from 'sonner'
 
 interface UseAuthReturn {
-  user: User | null
+  user: ReturnType<typeof useAuthStore>['user']
   isAuthenticated: boolean
   isLoading: boolean
   login: (credentials: LoginCredentials) => Promise<void>
-  logout: () => void
-  refreshAuth: () => void
+  register: (data: RegisterData) => Promise<void>
+  logout: () => Promise<void>
 }
 
 /**
  * Custom hook for authentication management
- * Handles login, logout, and auth state
  */
 export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, isAuthenticated, setAuth, logout: storeLogout } = useAuthStore()
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Check authentication status on mount
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  /**
-   * Check if user is authenticated by verifying token in localStorage
-   */
-  const checkAuth = () => {
-    try {
-      const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
-      const userStr = localStorage.getItem(STORAGE_KEYS.USER)
-
-      if (token && userStr) {
-        const userData = JSON.parse(userStr)
-        setUser(userData)
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      // Clear invalid data
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-      localStorage.removeItem(STORAGE_KEYS.USER)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  /**
-   * Login user with credentials
-   */
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = async (credentials: LoginCredentials) => {
     try {
       setIsLoading(true)
-      const response = await api.post<AuthResponse>(API_ENDPOINTS.LOGIN, credentials)
-
-      const { token, user: userData } = response.data
-
-      // Store token and user data
-      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token)
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData))
-
-      setUser(userData)
+      const response = await authService.login(credentials)
+      setAuth(response.user, response.token)
+      toast.success('Login successful!')
     } catch (error) {
       console.error('Login failed:', error)
-      const errorMessage = error instanceof Error && 'response' in error
-        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
-        : 'Login failed'
-      throw new Error(errorMessage || 'Login failed')
+      toast.error('Login failed. Please check your credentials.')
+      throw error
     } finally {
       setIsLoading(false)
     }
   }
 
-  /**
-   * Logout user and clear auth data
-   */
-  const logout = () => {
+  const register = async (data: RegisterData) => {
     try {
-      // Call logout endpoint (optional, for server-side cleanup)
-      api.post(API_ENDPOINTS.LOGOUT).catch(err => {
-        console.error('Logout API call failed:', err)
-      })
+      setIsLoading(true)
+      const response = await authService.register(data)
+      setAuth(response.user, response.token)
+      toast.success('Registration successful! Welcome to RemitLink!')
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('Registration failed:', error)
+      toast.error('Registration failed. Please try again.')
+      throw error
     } finally {
-      // Clear local storage
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-      localStorage.removeItem(STORAGE_KEYS.USER)
-      setUser(null)
-
-      // Redirect to login
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login'
-      }
+      setIsLoading(false)
     }
   }
 
-  /**
-   * Refresh auth state from localStorage
-   * Useful after external updates
-   */
-  const refreshAuth = () => {
-    checkAuth()
+  const logout = async () => {
+    try {
+      await authService.logout()
+      storeLogout()
+      toast.success('Logged out successfully')
+    } catch (error) {
+      console.error('Logout error:', error)
+      storeLogout() // Clear local state even if API call fails
+    }
   }
 
   return {
     user,
-    isAuthenticated: !!user,
+    isAuthenticated,
     isLoading,
     login,
+    register,
     logout,
-    refreshAuth,
   }
 }
 

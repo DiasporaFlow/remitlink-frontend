@@ -21,6 +21,16 @@ export const CURRENCIES = [
   { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
 ] as const
 
+// Supported Countries
+export const COUNTRIES = [
+  { code: 'AZ', name: 'Azerbaijan', flag: '🇦🇿', currencies: ['AZN', 'USD'] },
+  { code: 'TR', name: 'Turkey', flag: '🇹🇷', currencies: ['TRY', 'USD', 'EUR'] },
+  { code: 'DE', name: 'Germany', flag: '🇩🇪', currencies: ['EUR', 'USD'] },
+  { code: 'US', name: 'United States', flag: '🇺🇸', currencies: ['USD'] },
+  { code: 'RU', name: 'Russia', flag: '🇷🇺', currencies: ['RUB', 'USD'] },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', currencies: ['GBP', 'EUR', 'USD'] },
+] as const
+
 // Transaction Status
 export const TRANSACTION_STATUS = {
   PENDING: 'pending',
