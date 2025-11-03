@@ -1,46 +1,45 @@
 import Link from 'next/link'
+import { LoginForm } from '@/components/features/auth/LoginForm'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-md w-full mx-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <Link href="/" className="text-2xl font-bold text-primary-600 hover:text-primary-700">
-              RemitLink
-            </Link>
-            <h2 className="text-3xl font-bold text-gray-900 mt-4 mb-2">
-              Login
-            </h2>
-            <p className="text-gray-600">
-              Welcome back! Please sign in to continue
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-background to-secondary-50 p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-primary-600 mb-2">RemitLink</h1>
+            <p className="text-sm text-muted-foreground">
+              Connecting Hearts, Bridging Borders
             </p>
-          </div>
+          </Link>
+        </div>
 
-          {/* Coming Soon Message */}
-          <div className="bg-primary-50 border border-primary-200 rounded-lg p-6 text-center">
-            <div className="text-4xl mb-4">🚧</div>
-            <p className="text-primary-800 font-semibold text-lg mb-2">
-              Coming Soon...
-            </p>
-            <p className="text-primary-600 text-sm">
-              Login functionality is under development. Stay tuned!
-            </p>
-          </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome back</CardTitle>
+            <CardDescription>
+              Sign in to your account to continue
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LoginForm />
 
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="text-primary-600 hover:text-primary-700 font-semibold">
-                Sign up
-              </Link>
-            </p>
-            <Link href="/" className="text-gray-500 hover:text-gray-700 text-sm mt-4 inline-block">
-              ← Back to Home
-            </Link>
-          </div>
+            <div className="mt-6 text-center text-sm">
+              <p className="text-muted-foreground">
+                Don&apos;t have an account?{' '}
+                <Link href="/register" className="text-primary hover:underline font-semibold">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+            ← Back to home
+          </Link>
         </div>
       </div>
     </main>
