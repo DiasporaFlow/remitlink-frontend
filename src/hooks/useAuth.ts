@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { authService } from '@/services/authService'
-import type { LoginCredentials, RegisterData } from '@/types'
+import type { LoginCredentials, RegisterData, User } from '@/types'
 import { toast } from 'sonner'
 
 interface UseAuthReturn {
-  user: ReturnType<typeof useAuthStore>['user']
+  user: User | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (credentials: LoginCredentials) => Promise<void>

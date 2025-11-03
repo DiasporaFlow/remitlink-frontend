@@ -28,8 +28,7 @@ export const authService = {
    * Register new user
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword, agreeToTerms, ...registerData } = data
+    const { confirmPassword: _confirmPassword, agreeToTerms: _agreeToTerms, ...registerData } = data
     const response = await api.post<ApiResponse<AuthResponse>>(
       '/auth/register',
       registerData
